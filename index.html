@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DENKOMLEKREM 101 BANJARMASIN — Cighra Apta Nirbhaya</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Rajdhani (untuk aksen militer tegas) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        army: {
+                            dark: '#0f1711',
+                            base: '#1b2e1e',
+                            light: '#28422c',
+                            accent: '#3a5f40',
+                            gold: '#d4af37',
+                            goldHover: '#e5c150',
+                            slate: '#162019'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        military: ['Rajdhani', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'tactical-grid': "radial-gradient(rgba(212, 175, 55, 0.12) 1px, transparent 1px), linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)",
+                    },
+                    backgroundSize: {
+                        'tactical-grid': '40px 40px, 40px 40px, 40px 40px',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Animasi Radar Halus pada Hero */
+        @keyframes radar-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .radar-sweep {
+            background: conic-gradient(from 0deg, rgba(212, 175, 55, 0.25) 0deg, rgba(212, 175, 55, 0.05) 45deg, transparent 90deg);
+            animation: radar-spin 8s linear infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+        .pulse-dot::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 9999px;
+            border: 2px solid #22c55e;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f1711;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #28422c;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4af37;
+        }
+    </style>
+</head>
+<body class="bg-army-dark text-gray-100 font-sans antialiased selection:bg-army-gold selection:text-army-dark overflow-x-hidden">
+
+    <!-- ==================== 1. NAVBAR ==================== -->
+    <header class="fixed top-0 inset-x-0 z-50 bg-army-dark/95 backdrop-blur-md border-b border-army-gold/25 shadow-xl transition-all duration-300" id="navbar">
+        <!-- Top Military Strip -->
+        <div class="bg-army-base border-b border-white/10 py-1 px-4 text-[11px] sm:text-xs text-gray-300">
+            <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+                <div class="flex items-center space-x-2">
+                    <span class="text-army-gold font-semibold tracking-wider uppercase">KOMANDO DAERAH MILITER XXII/TAMBUN BUNGAI</span>
+                    <span class="hidden sm:inline text-white/30">|</span>
+                    <span class="hidden sm:inline text-gray-300">KOMLEKDAM XXII/TAMBUN BUNGAI</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="live-clock" class="font-mono text-army-gold font-medium">WITA --:--:--</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Nav -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo & Identitas -->
+                <a href="#beranda" class="flex items-center space-x-3 group">
+                    <!-- Logo Resmi Cighra Apta Nirbhaya -->
+                    <div class="relative w-13 h-13 sm:w-14 sm:h-14 flex items-center justify-center rounded-xl bg-gradient-to-br from-army-base to-army-dark border border-army-gold/60 p-1 shadow-lg group-hover:scale-105 transition-transform">
+                        <img 
+                            src="20261115_154942_0000.png" 
+                            alt="Logo Denkomlekrem 101 Banjarmasin - Cighra Apta Nirbhaya" 
+                            class="w-full h-full object-contain drop-shadow-md"
+                            onerror="this.src='https://placehold.co/120x120/1b2e1e/d4af37?text=KOMLEK+101'"
+                        >
+                    </div>
+                    <div>
+                        <div class="font-military font-bold text-lg sm:text-xl tracking-wider text-white leading-none group-hover:text-army-gold transition-colors">
+                            DENKOMLEKREM 101 BJM
+                        </div>
+                        <div class="text-[11px] sm:text-xs text-army-gold font-medium tracking-widest uppercase mt-1">
+                            Banjarmasin • Cighra Apta Nirbhaya
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Desktop Menu -->
+                <nav class="hidden lg:flex items-center space-x-1">
+                    <a href="#beranda" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-army-gold hover:bg-white/5 transition">Beranda</a>
+                    <a href="#profil" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-army-gold hover:bg-white/5 transition">Profil & Sejarah</a>
+                    <a href="#alutsista" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-army-gold hover:bg-white/5 transition">Tugas & Alutsista</a>
+                    <a href="#berita" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-army-gold hover:bg-white/5 transition">Berita Kegiatan</a>
+                    <a href="#kontak" class="px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:text-army-gold hover:bg-white/5 transition">Layanan & Kontak</a>
+                </nav>
+
+                <!-- Status Siaga & Mobile Menu Button -->
+                <div class="flex items-center space-x-3">
+                    <button onclick="openSiagaModal()" class="hidden sm:flex items-center space-x-2.5 bg-army-base hover:bg-army-light border border-emerald-500/40 px-3.5 py-2 rounded-xl transition shadow-md cursor-pointer">
+                        <span class="relative flex h-2.5 w-2.5 pulse-dot">
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                        </span>
+                        <div class="text-left">
+                            <div class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider leading-none">Siaga Komunikasi 24/7</div>
+                            <div class="text-[10px] text-gray-300 mt-0.5">Posko Komlek Aktif</div>
+                        </div>
+                    </button>
+
+                    <!-- Hamburger Button -->
+                    <button id="mobile-menu-btn" aria-label="Buka Menu" class="lg:hidden p-2.5 rounded-xl bg-army-base border border-white/10 text-gray-200 hover:text-army-gold focus:outline-none">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-army-slate border-b border-army-gold/20 px-4 pt-2 pb-5 space-y-1">
+            <a href="#beranda" class="mobile-link block px-4 py-3 rounded-xl text-base font-medium text-gray-200 hover:bg-army-base hover:text-army-gold">Beranda</a>
+            <a href="#profil" class="mobile-link block px-4 py-3 rounded-xl text-base font-medium text-gray-200 hover:bg-army-base hover:text-army-gold">Profil & Sejarah</a>
+            <a href="#alutsista" class="mobile-link block px-4 py-3 rounded-xl text-base font-medium text-gray-200 hover:bg-army-base hover:text-army-gold">Tugas & Alutsista</a>
+            <a href="#berita" class="mobile-link block px-4 py-3 rounded-xl text-base font-medium text-gray-200 hover:bg-army-base hover:text-army-gold">Berita Kegiatan</a>
+            <a href="#kontak" class="mobile-link block px-4 py-3 rounded-xl text-base font-medium text-gray-200 hover:bg-army-base hover:text-army-gold">Layanan & Kontak</a>
+            <div class="pt-2">
+                <button onclick="openSiagaModal()" class="w-full flex items-center justify-center space-x-2 bg-army-base border border-emerald-500/40 px-4 py-3 rounded-xl text-emerald-400 font-semibold text-sm">
+                    <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span>Status: Siaga Komunikasi 24/7</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== 2. HERO SECTION ==================== -->
+    <section id="beranda" class="relative min-h-screen pt-32 pb-20 flex items-center bg-army-dark bg-tactical-grid overflow-hidden">
+        <!-- Tactical Background Gradients & Radar Animation -->
+        <div class="absolute inset-0 bg-gradient-to-b from-army-base/40 via-army-dark/85 to-army-dark pointer-events-none"></div>
+        
+        <!-- Radar Visual Overlay -->
+        <div class="absolute -right-32 top-20 w-[550px] h-[550px] sm:w-[700px] sm:h-[700px] rounded-full border border-army-gold/15 pointer-events-none opacity-60 flex items-center justify-center">
+            <div class="w-[75%] h-[75%] rounded-full border border-army-gold/15 flex items-center justify-center">
+                <div class="w-[50%] h-[50%] rounded-full border border-army-gold/20 flex items-center justify-center">
+                    <div class="w-3 h-3 rounded-full bg-army-gold/50"></div>
+                </div>
+            </div>
+            <!-- Crosshair lines -->
+            <div class="absolute inset-x-0 h-[1px] bg-army-gold/10"></div>
+            <div class="absolute inset-y-0 w-[1px] bg-army-gold/10"></div>
+            <!-- Rotating Radar Beam -->
+            <div class="absolute inset-0 rounded-full radar-sweep"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="grid lg:grid-cols-12 gap-12 items-center">
+                <!-- Left Text Content -->
+                <div class="lg:col-span-8 space-y-6">
+                    <!-- Logo Satuan Utama di Bagian Atas Hero Section -->
+                    <div class="flex flex-col sm:flex-row items-center sm:items-center gap-4 pt-2">
+                        <div class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-army-base/80 backdrop-blur-md border-2 border-army-gold/60 p-2 shadow-2xl shadow-army-gold/15 flex items-center justify-center shrink-0">
+                            <img 
+                                src="20261115_154942_0000.png" 
+                                alt="Lambang Komlekad Cighra Apta Nirbhaya" 
+                                class="w-full h-full object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+                                onerror="this.src='https://placehold.co/160x160/1b2e1e/d4af37?text=CIGHRA+APTA'"
+                            >
+                        </div>
+                        <div class="text-center sm:text-left space-y-2">
+                            <!-- Badge Korps -->
+                            <div class="inline-flex items-center space-x-2 bg-army-base/90 border border-army-gold/40 px-4 py-1.5 rounded-full shadow-lg">
+                                <i data-lucide="radio" class="w-4 h-4 text-army-gold"></i>
+                                <span class="text-xs sm:text-sm font-semibold tracking-wider text-army-gold uppercase">
+                                    Korps Komunikasi dan Elektronika TNI AD
+                                </span>
+                            </div>
+                            <p class="text-xs text-gray-300 tracking-widest uppercase font-semibold">
+                                Balakaju Kodam di Wilayah Korem 101 Banjarmasin
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Main Title -->
+                    <h1 class="font-military font-bold text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.1] tracking-tight uppercase text-center sm:text-left">
+                        Detasemen Komunikasi dan Elektronika <span class="text-army-gold">Korem 101 Banjarmasin</span>
+                    </h1>
+
+                    <!-- Motto Box -->
+                    <div class="bg-army-base/60 backdrop-blur-sm border-l-4 border-army-gold p-4 sm:p-5 rounded-r-xl max-w-2xl">
+                        <div class="flex items-center space-x-2 text-army-gold font-military font-bold text-xl sm:text-2xl tracking-wide uppercase">
+                            <i data-lucide="shield-check" class="w-6 h-6"></i>
+                            <span>"Cighra Apta Nirbhaya"</span>
+                        </div>
+                        <p class="text-gray-300 text-sm sm:text-base mt-1">
+                            <strong>Cepat, Tepat, Rahasia / Aman</strong> — Urat nadi komando dan pengendalian yang andal dalam mendukung tugas pokok Korem 101 di seluruh wilayah Kalimantan Selatan.
+                        </p>
+                    </div>
+
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <a href="#profil" class="inline-flex items-center space-x-2 bg-army-gold hover:bg-army-goldHover text-army-dark font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-army-gold/20 transition transform hover:-translate-y-0.5">
+                            <span>Profil Satuan</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#alutsista" class="inline-flex items-center space-x-2 bg-army-base hover:bg-army-light text-white border border-army-gold/40 font-semibold px-6 py-3.5 rounded-xl transition transform hover:-translate-y-0.5">
+                            <i data-lucide="cpu" class="w-5 h-5 text-army-gold"></i>
+                            <span>Gelar Alutsista Komlek</span>
+                        </a>
+                    </div>
+
+                    <!-- Tactical Metrics -->
+                    <div class="grid grid-cols-3 gap-4 pt-6 border-t border-white/10 max-w-xl">
+                        <div>
+                            <div class="font-military font-bold text-2xl sm:text-3xl text-army-gold">24/7</div>
+                            <div class="text-xs text-gray-400 uppercase tracking-wider mt-0.5">Kesiapsiagaan Kodal</div>
+                        </div>
+                        <div>
+                            <div class="font-military font-bold text-2xl sm:text-3xl text-white">13 Kab/Kota</div>
+                            <div class="text-xs text-gray-400 uppercase tracking-wider mt-0.5">Jangkauan Jaring Kalsel</div>
+                        </div>
+                        <div>
+                            <div class="font-military font-bold text-2xl sm:text-3xl text-emerald-400">100%</div>
+                            <div class="text-xs text-gray-400 uppercase tracking-wider mt-0.5">Keamanan Sandi & Data</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Tactical Card -->
+                <div class="lg:col-span-4">
+                    <div class="bg-army-slate/90 backdrop-blur-md border border-army-gold/30 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-army-gold text-army-dark text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">
+                            Status Jaring Korem 101
+                        </div>
+                        
+                        <div class="flex items-center space-x-3 mb-6 mt-2">
+                            <div class="w-12 h-12 rounded-xl bg-army-base border border-army-gold/40 flex items-center justify-center text-army-gold">
+                                <i data-lucide="satellite" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-military font-bold text-lg text-white uppercase tracking-wide">Telemetry & Kodal</h3>
+                                <p class="text-xs text-gray-400">Makorem 101 Banjarmasin</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 text-sm">
+                            <div class="bg-army-dark/80 p-3.5 rounded-xl border border-white/5 flex justify-between items-center">
+                                <span class="text-gray-300 flex items-center gap-2">
+                                    <i data-lucide="radio-tower" class="w-4 h-4 text-army-gold"></i> Repeater VHF/UHF
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">OPTIMAL</span>
+                            </div>
+                            <div class="bg-army-dark/80 p-3.5 rounded-xl border border-white/5 flex justify-between items-center">
+                                <span class="text-gray-300 flex items-center gap-2">
+                                    <i data-lucide="wifi" class="w-4 h-4 text-army-gold"></i> Jaring VSAT & Satelit
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">TERHUBUNG</span>
+                            </div>
+                            <div class="bg-army-dark/80 p-3.5 rounded-xl border border-white/5 flex justify-between items-center">
+                                <span class="text-gray-300 flex items-center gap-2">
+                                    <i data-lucide="smartphone" class="w-4 h-4 text-army-gold"></i> Sistem PoC & Vicon
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">SIAGA</span>
+                            </div>
+                            <div class="bg-army-dark/80 p-3.5 rounded-xl border border-white/5 flex justify-between items-center">
+                                <span class="text-gray-300 flex items-center gap-2">
+                                    <i data-lucide="flame" class="w-4 h-4 text-amber-400"></i> Posko Karhutla Kalsel
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">MONITORING</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-white/10 text-xs text-gray-400 flex items-center justify-between">
+                            <span>Frekuensi Utama: Terenkripsi</span>
+                            <span class="text-army-gold font-mono">101-KOM-BJM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 3. SAMBUTAN KOMANDAN & PROFIL SATUAN ==================== -->
+    <section id="profil" class="py-20 bg-army-slate border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-army-gold font-semibold text-xs tracking-widest uppercase">Profil & Kepemimpinan</span>
+                <h2 class="font-military font-bold text-3xl sm:text-4xl text-white uppercase mt-2 tracking-wide">
+                    Sambutan Komandan & Jati Diri Satuan
+                </h2>
+                <div class="w-24 h-1 bg-army-gold mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <!-- Sambutan Dandenkomlekrem 101 -->
+            <div class="bg-army-dark border border-army-gold/25 rounded-2xl p-6 sm:p-10 shadow-2xl mb-16">
+                <div class="grid lg:grid-cols-12 gap-8 items-center">
+                    <!-- Foto Resmi Komandan -->
+                    <div class="lg:col-span-4 flex flex-col items-center text-center">
+                        <div class="relative w-64 h-72 sm:w-72 sm:h-80 rounded-2xl overflow-hidden border-2 border-army-gold shadow-2xl shadow-army-gold/10 bg-gradient-to-b from-slate-100 via-white to-army-base group">
+                            <img 
+                                src="21a98d20-3630-43e9-a132-4872a6d9aa3f.png" 
+                                alt="Letkol Cke Adi Wahyu P., S.Kom., M.Tr.Mil. - Dandenkomlekrem 101 Banjarmasin"
+                                class="w-full h-full object-cover object-top scale-105 group-hover:scale-110 transition-transform duration-500"
+                                onerror="this.src='https://placehold.co/480x520/1b2e1e/d4af37?text=DANDENKOMLEKREM+101%0ALetkol+Cke+Adi+Wahyu+P.'"
+                            >
+                            <!-- Bingkai Taktis Sudut -->
+                            <div class="absolute top-2.5 left-2.5 w-4 h-4 border-t-2 border-l-2 border-army-gold pointer-events-none"></div>
+                            <div class="absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 border-army-gold pointer-events-none"></div>
+                            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-army-dark via-army-dark/90 to-transparent p-3">
+                                <span class="inline-block px-3 py-1 bg-army-gold text-army-dark text-[10px] font-bold rounded uppercase tracking-wider shadow">
+                                    Dandenkomlekrem 101 Bjm
+                                </span>
+                            </div>
+                        </div>
+                        <h3 class="font-military font-bold text-xl text-white mt-4">
+                            Letkol Cke Adi Wahyu P., S.Kom., M.Tr.Mil.
+                        </h3>
+                        <p class="text-xs text-army-gold uppercase tracking-wider mt-1">
+                            Komandan Detasemen Komunikasi dan Elektronika Korem 101 Banjarmasin
+                        </p>
+                    </div>
+
+                    <!-- Isi Sambutan -->
+                    <div class="lg:col-span-8 space-y-4">
+                        <div class="inline-flex items-center space-x-2 text-army-gold text-sm font-semibold">
+                            <i data-lucide="quote" class="w-5 h-5"></i>
+                            <span>Assalamu'alaikum Warahmatullahi Wabarakatuh, Salam Sejahtera untuk Kita Semua</span>
+                        </div>
+                        <p class="text-gray-300 leading-relaxed text-sm sm:text-base">
+                            Puji syukur kita panjatkan ke hadirat Tuhan Yang Maha Esa, karena atas rahmat dan karunia-Nya, website resmi <strong>Detasemen Komunikasi dan Elektronika Korem 101 Banjarmasin (Denkomlekrem 101 Bjm)</strong> dapat hadir sebagai sarana informasi, transparansi, dan edukasi publik mengenai peran strategis Korps Komunikasi dan Elektronika TNI Angkatan Darat.
+                        </p>
+                        <p class="text-gray-300 leading-relaxed text-sm sm:text-base">
+                            Di era peperangan modern dan transformasi digital yang bergerak sangat cepat, keunggulan informasi dan keandalan sistem komando pengendalian menjadi faktor penentu keberhasilan setiap tugas operasi maupun pembinaan teritorial. Berlandaskan semboyan <strong>"Cighra Apta Nirbhaya"</strong> (Cepat, Tepat, Rahasia/Aman), seluruh prajurit Denkomlekrem 101 senantiasa siap menggelar dukungan komunikasi taktis, satelit, elektronika, hingga pengamanan siber di seluruh penjuru Bumi Lambung Mangkurat, Kalimantan Selatan.
+                        </p>
+                        <p class="text-gray-300 leading-relaxed text-sm sm:text-base">
+                            Semoga kehadiran media digital ini semakin mempererat kemanunggalan TNI dengan rakyat serta menjadi jembatan sinergi dengan seluruh instansi pemerintah daerah dan pemangku kepentingan di Kalimantan Selatan.
+                        </p>
+                        <div class="pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                                <div class="text-xs text-gray-400 uppercase">Hormat Kami,</div>
+                                <div class="font-military font-bold text-lg text-army-gold">Komandan Denkomlekrem 101 Banjarmasin</div>
+                            </div>
+                            <span class="px-4 py-1.5 rounded-lg bg-army-base border border-army-gold/30 text-xs text-gray-200 font-medium">
+                                "Komlekad Profesional & Inovatif"
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sejarah Transformasi & Visi Misi -->
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Sejarah Singkat Transformasi -->
+                <div class="bg-army-dark border border-white/10 rounded-2xl p-6 sm:p-8 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-6">
+                            <div class="w-10 h-10 rounded-xl bg-army-base border border-army-gold/40 flex items-center justify-center text-army-gold">
+                                <i data-lucide="history" class="w-5 h-5"></i>
+                            </div>
+                            <h3 class="font-military font-bold text-2xl text-white uppercase">Sejarah & Transformasi Satuan</h3>
+                        </div>
+
+                        <div class="space-y-6 relative before:absolute before:inset-y-0 before:left-3.5 before:w-0.5 before:bg-army-gold/30">
+                            <div class="relative pl-10">
+                                <span class="absolute left-1.5 top-1.5 w-4 h-4 rounded-full bg-army-gold border-4 border-army-dark"></span>
+                                <h4 class="font-bold text-army-gold text-sm uppercase tracking-wider">Era Perhubungan Wilayah (Hubyah)</h4>
+                                <p class="text-gray-300 text-sm mt-1 leading-relaxed">
+                                    Berawal dari satuan pelayanan komunikasi radio HF/VHF di lingkungan Korem 101 yang bertugas menjamin kelancaran berita sandi dan hubungan komando antar Kodim di wilayah Kalimantan Selatan.
+                                </p>
+                            </div>
+                            <div class="relative pl-10">
+                                <span class="absolute left-1.5 top-1.5 w-4 h-4 rounded-full bg-army-gold border-4 border-army-dark"></span>
+                                <h4 class="font-bold text-army-gold text-sm uppercase tracking-wider">Era Denhubrem 101 Banjarmasin</h4>
+                                <p class="text-gray-300 text-sm mt-1 leading-relaxed">
+                                    Validasi organisasi meningkatkan kapasitas menjadi Detasemen Perhubungan Korem (Denhubrem) 101 dengan kemampuan pemeliharaan alat komunikasi, dukungan protokoler VVIP, serta komunikasi tanggap darurat bencana.
+                                </p>
+                            </div>
+                            <div class="relative pl-10">
+                                <span class="absolute left-1.5 top-1.5 w-4 h-4 rounded-full bg-emerald-400 border-4 border-army-dark"></span>
+                                <h4 class="font-bold text-emerald-400 text-sm uppercase tracking-wider">Transformasi Denkomlekrem 101 (Kini)</h4>
+                                <p class="text-gray-300 text-sm mt-1 leading-relaxed">
+                                    Sejalan dengan validasi Korps Perhubungan menjadi <strong>Komunikasi dan Elektronika Angkatan Darat (Komlekad)</strong>, satuan bertransformasi menjadi Denkomlekrem 101 Banjarmasin yang mengintegrasikan sistem satelit, teknologi informasi, peperangan elektronika (Pernika), dan pertahanan siber taktis.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visi, Misi & Nilai Inti -->
+                <div class="bg-army-dark border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-army-base border border-army-gold/40 flex items-center justify-center text-army-gold">
+                            <i data-lucide="target" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-military font-bold text-2xl text-white uppercase">Visi, Misi & Nilai Inti</h3>
+                    </div>
+
+                    <!-- Visi Card -->
+                    <div class="bg-gradient-to-r from-army-base to-army-light/60 border border-army-gold/40 p-5 rounded-xl">
+                        <div class="text-xs font-bold text-army-gold uppercase tracking-widest mb-1">Tema & Visi Utama</div>
+                        <p class="font-military font-bold text-xl text-white leading-snug">
+                            "Komlekad Profesional dan Inovatif untuk Indonesia Berdaulat, Adil dan Makmur"
+                        </p>
+                    </div>
+
+                    <!-- Misi List -->
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-200 uppercase tracking-wider mb-3">Misi Operasional Satuan:</h4>
+                        <ul class="space-y-2.5 text-sm text-gray-300">
+                            <li class="flex items-start space-x-2.5">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-army-gold shrink-0 mt-0.5"></i>
+                                <span>Menyelenggarakan dukungan komunikasi dan elektronika yang andal bagi Komando Korem 101 serta satuan jajaran.</span>
+                            </li>
+                            <li class="flex items-start space-x-2.5">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-army-gold shrink-0 mt-0.5"></i>
+                                <span>Meningkatkan profesionalisme prajurit Komlek melalui penguasaan teknologi siber, satelit, dan peperangan elektronika modern.</span>
+                            </li>
+                            <li class="flex items-start space-x-2.5">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-army-gold shrink-0 mt-0.5"></i>
+                                <span>Menjamin kesiapan komunikasi darurat dalam operasi penanggulangan bencana alam & Karhutla di Kalimantan Selatan.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Nilai Inti Cighra Apta Nirbhaya -->
+                    <div class="grid grid-cols-3 gap-3 pt-2">
+                        <div class="bg-army-base/70 border border-white/10 p-3 rounded-xl text-center">
+                            <div class="font-military font-bold text-lg text-army-gold">CIGHRA</div>
+                            <div class="text-xs text-gray-300 mt-0.5">Cepat dalam bertindak & gelar jaring</div>
+                        </div>
+                        <div class="bg-army-base/70 border border-white/10 p-3 rounded-xl text-center">
+                            <div class="font-military font-bold text-lg text-army-gold">APTA</div>
+                            <div class="text-xs text-gray-300 mt-0.5">Tepat sasaran & akurat penyampaian</div>
+                        </div>
+                        <div class="bg-army-base/70 border border-white/10 p-3 rounded-xl text-center">
+                            <div class="font-military font-bold text-lg text-army-gold">NIRBHAYA</div>
+                            <div class="text-xs text-gray-300 mt-0.5">Rahasia & aman dari penyadapan</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 4. BIDANG TUGAS & GELAR ALUTSISTA KOMLEK ==================== -->
+    <section id="alutsista" class="py-20 bg-army-dark bg-tactical-grid border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <span class="text-army-gold font-semibold text-xs tracking-widest uppercase">Kapabilitas Teknis & Gelar Alkom</span>
+                <h2 class="font-military font-bold text-3xl sm:text-4xl text-white uppercase mt-2 tracking-wide">
+                    Bidang Tugas & Gelar Alutsista Komlek
+                </h2>
+                <p class="text-gray-400 text-sm sm:text-base mt-3">
+                    Klik kategori di bawah untuk meninjau kemampuan teknis, perangkat komunikasi lapangan, dan kesiapan operasional Denkomlekrem 101 Banjarmasin.
+                </p>
+            </div>
+
+            <!-- Interactive Tabs Navigation -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8" id="alutsista-tabs">
+                <button onclick="switchTab('radio')" data-tab="radio" class="tab-btn active-tab flex items-center justify-center space-x-2.5 p-4 rounded-xl border text-left transition cursor-pointer bg-army-base border-army-gold text-white shadow-lg">
+                    <i data-lucide="radio" class="w-5 h-5 text-army-gold shrink-0"></i>
+                    <span class="font-military font-bold text-sm sm:text-base uppercase tracking-wide">Komunikasi Taktis & Radio</span>
+                </button>
+                <button onclick="switchTab('satelit')" data-tab="satelit" class="tab-btn flex items-center justify-center space-x-2.5 p-4 rounded-xl border border-white/10 bg-army-slate/80 hover:bg-army-base/60 text-gray-300 text-left transition cursor-pointer">
+                    <i data-lucide="satellite" class="w-5 h-5 text-army-gold shrink-0"></i>
+                    <span class="font-military font-bold text-sm sm:text-base uppercase tracking-wide">Komunikasi Satelit & Data</span>
+                </button>
+                <button onclick="switchTab('siber')" data-tab="siber" class="tab-btn flex items-center justify-center space-x-2.5 p-4 rounded-xl border border-white/10 bg-army-slate/80 hover:bg-army-base/60 text-gray-300 text-left transition cursor-pointer">
+                    <i data-lucide="shield-alert" class="w-5 h-5 text-army-gold shrink-0"></i>
+                    <span class="font-military font-bold text-sm sm:text-base uppercase tracking-wide">TI, Siber & PoC</span>
+                </button>
+                <button onclick="switchTab('pernika')" data-tab="pernika" class="tab-btn flex items-center justify-center space-x-2.5 p-4 rounded-xl border border-white/10 bg-army-slate/80 hover:bg-army-base/60 text-gray-300 text-left transition cursor-pointer">
+                    <i data-lucide="cpu" class="w-5 h-5 text-army-gold shrink-0"></i>
+                    <span class="font-military font-bold text-sm sm:text-base uppercase tracking-wide">Pernika & Elektronika</span>
+                </button>
+            </div>
+
+            <!-- Tab Content Container -->
+            <div id="alutsista-content" class="bg-army-slate border border-army-gold/25 rounded-2xl p-6 sm:p-10 shadow-2xl transition-all duration-300">
+                <!-- Content injected dynamically by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 5. GALERI & BERITA KEGIATAN SATUAN ==================== -->
+    <section id="berita" class="py-20 bg-army-slate border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                <div>
+                    <span class="text-army-gold font-semibold text-xs tracking-widest uppercase">Publikasi & Dokumentasi Satuan</span>
+                    <h2 class="font-military font-bold text-3xl sm:text-4xl text-white uppercase mt-2 tracking-wide">
+                        Berita & Kegiatan Denkomlekrem 101
+                    </h2>
+                </div>
+
+                <!-- Filter Kategori -->
+                <div class="flex flex-wrap gap-2" id="news-filters">
+                    <button onclick="filterNews('all')" data-filter="all" class="filter-btn bg-army-gold text-army-dark font-bold px-4 py-2 rounded-xl text-xs sm:text-sm transition cursor-pointer">
+                        Semua Kegiatan
+                    </button>
+                    <button onclick="filterNews('Operasi & Karhutla')" data-filter="Operasi & Karhutla" class="filter-btn bg-army-dark hover:bg-army-base text-gray-300 border border-white/10 px-4 py-2 rounded-xl text-xs sm:text-sm transition cursor-pointer">
+                        Operasi & Karhutla
+                    </button>
+                    <button onclick="filterNews('Dukungan VVIP')" data-filter="Dukungan VVIP" class="filter-btn bg-army-dark hover:bg-army-base text-gray-300 border border-white/10 px-4 py-2 rounded-xl text-xs sm:text-sm transition cursor-pointer">
+                        Dukungan VVIP
+                    </button>
+                    <button onclick="filterNews('Kegiatan Satuan')" data-filter="Kegiatan Satuan" class="filter-btn bg-army-dark hover:bg-army-base text-gray-300 border border-white/10 px-4 py-2 rounded-xl text-xs sm:text-sm transition cursor-pointer">
+                        Kegiatan Satuan
+                    </button>
+                    <button onclick="filterNews('Latihan & Binsat')" data-filter="Latihan & Binsat" class="filter-btn bg-army-dark hover:bg-army-base text-gray-300 border border-white/10 px-4 py-2 rounded-xl text-xs sm:text-sm transition cursor-pointer">
+                        Latihan & Binsat
+                    </button>
+                </div>
+            </div>
+
+            <!-- News Grid -->
+            <div id="news-grid" class="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
+                <!-- Cards injected dynamically by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 6. LAYANAN INFORMASI & KONTAK MARKAS ==================== -->
+    <section id="kontak" class="py-20 bg-army-dark border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-army-gold font-semibold text-xs tracking-widest uppercase">Pelayanan & Koordinasi</span>
+                <h2 class="font-military font-bold text-3xl sm:text-4xl text-white uppercase mt-2 tracking-wide">
+                    Layanan Informasi & Kontak Markas
+                </h2>
+                <p class="text-gray-400 text-sm sm:text-base mt-3">
+                    Pengajuan permohonan dukungan komunikasi, pengaduan masyarakat, atau koordinasi lintas instansi di wilayah Korem 101 Banjarmasin.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-8">
+                <!-- Form Permohonan / Pengaduan -->
+                <div class="lg:col-span-7 bg-army-slate border border-army-gold/25 rounded-2xl p-6 sm:p-8 shadow-xl">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 rounded-xl bg-army-base border border-army-gold/40 flex items-center justify-center text-army-gold">
+                            <i data-lucide="file-text" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-military font-bold text-xl text-white uppercase">Formulir Permohonan & Layanan Komlek</h3>
+                            <p class="text-xs text-gray-400">Terkoneksi langsung dengan Piket Staf Operasi & Jaring Denkomlekrem 101</p>
+                        </div>
+                    </div>
+
+                    <form id="support-form" class="space-y-4">
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">Nama Lengkap / Pangkat</label>
+                                <input type="text" id="sender-name" required placeholder="Contoh: Kapten Inf Budi / Drs. Ahmad" class="w-full bg-army-dark border border-white/15 focus:border-army-gold rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">Satuan / Instansi</label>
+                                <input type="text" id="sender-unit" required placeholder="Contoh: Kodim 1007/Bjm / BPBD Kalsel" class="w-full bg-army-dark border border-white/15 focus:border-army-gold rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none transition">
+                            </div>
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">Nomor WhatsApp / Telepon</label>
+                                <input type="tel" id="sender-phone" required placeholder="0812-XXXX-XXXX" class="w-full bg-army-dark border border-white/15 focus:border-army-gold rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">Jenis Layanan</label>
+                                <select id="service-type" class="w-full bg-army-dark border border-white/15 focus:border-army-gold rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition">
+                                    <option value="Dukungan Alkom Kegiatan / VVIP">Dukungan Alkom Kegiatan / VVIP</option>
+                                    <option value="Dukungan Komunikasi Tanggap Darurat / Karhutla">Dukungan Komunikasi Darurat / Karhutla</option>
+                                    <option value="Pemeliharaan & Perbaikan Alkom">Pemeliharaan & Perbaikan Alkom</option>
+                                    <option value="Koordinasi Vicon & Jaring Data">Koordinasi Vicon & Jaring Data</option>
+                                    <option value="Informasi Publik & Pengaduan">Informasi Publik & Pengaduan</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">Uraian Permohonan / Lokasi & Waktu Kegiatan</label>
+                            <textarea id="service-desc" rows="4" required placeholder="Tuliskan detail kebutuhan dukungan komunikasi, lokasi gelar, dan jadwal pelaksanaan..." class="w-full bg-army-dark border border-white/15 focus:border-army-gold rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none transition"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full bg-army-gold hover:bg-army-goldHover text-army-dark font-bold py-3.5 px-6 rounded-xl shadow-lg transition flex items-center justify-center space-x-2 cursor-pointer">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>Kirim Permohonan ke Posko Denkomlekrem 101</span>
+                        </button>
+                    </form>
+
+                    <!-- Confirmation Message Box (Hidden by default) -->
+                    <div id="form-feedback" class="hidden mt-5 p-4 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-200 text-sm">
+                        <div class="flex items-start space-x-3">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5"></i>
+                            <div>
+                                <div class="font-bold text-emerald-300">Laporan / Permohonan Berhasil Diregistrasi!</div>
+                                <p id="feedback-detail" class="text-xs mt-1 text-gray-300"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kontak Markas & Peta Lokasi -->
+                <div class="lg:col-span-5 space-y-6">
+                    <!-- Info Card -->
+                    <div class="bg-army-slate border border-white/10 rounded-2xl p-6 space-y-5">
+                        <h3 class="font-military font-bold text-xl text-white uppercase border-b border-white/10 pb-3">
+                            Markas Denkomlekrem 101 Banjarmasin
+                        </h3>
+
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-army-base flex items-center justify-center text-army-gold shrink-0">
+                                <i data-lucide="map-pin" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-gray-400 uppercase">Alamat Markas</div>
+                                <p class="text-sm text-gray-200 mt-0.5">
+                                    Jl. Sutoyo S No. 404, Pelambuan, Kecamatan Banjarmasin Barat, Kota Banjarmasin, Kalimantan Selatan 70118
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-army-base flex items-center justify-center text-emerald-400 shrink-0">
+                                <i data-lucide="phone-call" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-gray-400 uppercase">Piket Komunikasi Satuan</div>
+                                <a href="tel:+6281258594222" class="inline-block text-sm font-mono text-emerald-400 hover:text-emerald-300 font-bold mt-0.5 transition">
+                                    0812-5859-4222
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-army-base flex items-center justify-center text-army-gold shrink-0">
+                                <i data-lucide="instagram" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-gray-400 uppercase">IG Satuan</div>
+                                <a href="https://instagram.com/denkomlekrem101banjarmasin" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-sm text-gray-200 hover:text-army-gold font-medium mt-0.5 transition">
+                                    <span>@denkomlekrem101banjarmasin</span>
+                                    <i data-lucide="external-link" class="w-3.5 h-3.5 text-army-gold"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Embedded Google Maps Denhubrem 101 Banjarmasin -->
+                    <div class="bg-army-slate border border-army-gold/30 rounded-2xl overflow-hidden shadow-xl">
+                        <div class="bg-army-base px-4 py-2.5 flex items-center justify-between border-b border-white/10">
+                            <span class="text-xs font-bold text-army-gold uppercase tracking-wider flex items-center gap-1.5">
+                                <i data-lucide="map-pin" class="w-4 h-4"></i> Google Maps Denhubrem 101 Banjarmasin
+                            </span>
+                            <a href="https://maps.google.com/?q=Denhubrem+101+Banjarmasin+Jl.+Sutoyo+S+No.+404+Pelambuan+Banjarmasin" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-gray-200 hover:text-army-gold flex items-center gap-1 transition">
+                                <span>Buka di Google Maps</span>
+                                <i data-lucide="external-link" class="w-3 h-3"></i>
+                            </a>
+                        </div>
+                        <div class="relative h-64 bg-[#132217]">
+                            <iframe 
+                                title="Lokasi Denhubrem 101 Banjarmasin"
+                                src="https://maps.google.com/maps?q=Denhubrem%20101%20Banjarmasin%20Jl.%20Sutoyo%20S%20No.%20404%20Pelambuan&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                                class="w-full h-full border-0"
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 7. FOOTER ==================== -->
+    <footer class="bg-[#090e0a] border-t border-army-gold/25 pt-14 pb-8 text-gray-400">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-12 gap-10 pb-10 border-b border-white/10">
+                <!-- Brand -->
+                <div class="md:col-span-5 space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-11 h-11 rounded-xl bg-army-base border border-army-gold p-1 flex items-center justify-center">
+                            <img src="20261115_154942_0000.png" alt="Logo Komlek" class="w-full h-full object-contain">
+                        </div>
+                        <div>
+                            <div class="font-military font-bold text-lg text-white tracking-wider">DENKOMLEKREM 101 BJM</div>
+                            <div class="text-xs text-army-gold">Cighra Apta Nirbhaya • TNI Angkatan Darat</div>
+                        </div>
+                    </div>
+                    <p class="text-sm leading-relaxed text-gray-400">
+                        Satuan Pelaksana Komunikasi dan Elektronika di bawah Komlekdam XXII/Tambun Bungai yang menyelenggarakan dukungan komunikasi, elektronika, dan peperangan elektronika guna mendukung tugas pokok TNI AD di wilayah Kalimantan Selatan.
+                    </p>
+                </div>
+
+                <!-- Tautan Cepat -->
+                <div class="md:col-span-3 space-y-3">
+                    <h4 class="font-military font-bold text-white uppercase tracking-wider">Navigasi Satuan</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#beranda" class="hover:text-army-gold transition">Beranda Utama</a></li>
+                        <li><a href="#profil" class="hover:text-army-gold transition">Sambutan & Sejarah Satuan</a></li>
+                        <li><a href="#alutsista" class="hover:text-army-gold transition">Bidang Tugas & Alutsista</a></li>
+                        <li><a href="#berita" class="hover:text-army-gold transition">Berita & Dokumentasi</a></li>
+                        <li><a href="#kontak" class="hover:text-army-gold transition">Layanan & Kontak Markas</a></li>
+                    </ul>
+                </div>
+
+                <!-- Tautan Terkait TNI AD -->
+                <div class="md:col-span-4 space-y-3">
+                    <h4 class="font-military font-bold text-white uppercase tracking-wider">Komando Atas & Korps</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center space-x-2">
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-army-gold"></i>
+                            <span>Tentara Nasional Indonesia Angkatan Darat (TNI AD)</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-army-gold"></i>
+                            <span>Pusat Komunikasi dan Elektronika AD (Puskomlekad)</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-army-gold"></i>
+                            <span>Komando Daerah Militer XXII/Tambun Bungai</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-army-gold"></i>
+                            <span>Komlekdam XXII/Tambun Bungai</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+                <p>&copy; 2026 Detasemen Komunikasi dan Elektronika Korem 101 Banjarmasin. Hak Cipta Dilindungi Undang-Undang.</p>
+                <p class="text-army-gold/80 font-medium">Cighra Apta Nirbhaya — Cepat, Tepat, Rahasia</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== MODAL: BACA BERITA LENGKAP ==================== -->
+    <div id="news-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-army-slate border border-army-gold/40 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="relative h-64 sm:h-80 bg-army-base">
+                <img id="modal-img" src="" alt="Foto Kegiatan" class="w-full h-full object-cover object-top">
+                <button onclick="closeNewsModal()" aria-label="Tutup Berita" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-army-dark/90 text-white hover:text-army-gold border border-white/20 flex items-center justify-center cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+                <span id="modal-category" class="absolute bottom-4 left-4 bg-army-gold text-army-dark text-xs font-bold px-3 py-1 rounded-lg uppercase tracking-wider"></span>
+            </div>
+            <div class="p-6 sm:p-8 space-y-4">
+                <div class="flex items-center space-x-4 text-xs text-gray-400">
+                    <span id="modal-date" class="flex items-center gap-1"><i data-lucide="calendar" class="w-3.5 h-3.5 text-army-gold"></i> </span>
+                    <span id="modal-location" class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-army-gold"></i> </span>
+                </div>
+                <h3 id="modal-title" class="font-military font-bold text-2xl sm:text-3xl text-white leading-snug"></h3>
+                <div id="modal-body" class="text-gray-300 text-sm sm:text-base leading-relaxed space-y-3"></div>
+                <div class="pt-4 border-t border-white/10 flex justify-end">
+                    <button onclick="closeNewsModal()" class="bg-army-base hover:bg-army-light text-white border border-army-gold/40 px-5 py-2.5 rounded-xl text-sm font-semibold cursor-pointer">
+                        Tutup Artikel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: STATUS SIAGA KOMUNIKASI 24/7 ==================== -->
+    <div id="siaga-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-army-slate border border-emerald-500/40 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center space-x-2.5">
+                    <span class="h-3 w-3 rounded-full bg-emerald-500 animate-ping"></span>
+                    <h3 class="font-military font-bold text-xl text-white uppercase">Posko Siaga Komlek 24/7</h3>
+                </div>
+                <button onclick="closeSiagaModal()" class="text-gray-400 hover:text-white cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <p class="text-sm text-gray-300 leading-relaxed">
+                Regu Siaga Komunikasi Denkomlekrem 101 Banjarmasin bertugas penuh selama 24 jam memantau jaring radio taktis, satelit VSAT, serta dukungan komunikasi darurat di seluruh wilayah Korem 101.
+            </p>
+            <div class="bg-army-dark p-4 rounded-xl border border-white/10 space-y-2 text-xs">
+                <div class="flex justify-between"><span class="text-gray-400">Status Jaring Kodim Jajaran:</span> <span class="text-emerald-400 font-bold">100% TERKONEKSI</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Piket Komunikasi Satuan:</span> <a href="tel:+6281258594222" class="text-army-gold hover:underline font-mono font-bold">0812-5859-4222</a></div>
+                <div class="flex justify-between"><span class="text-gray-400">Callsign Induk:</span> <span class="text-white font-mono">KOMLEK 101 BJM</span></div>
+            </div>
+            <div class="flex gap-3">
+                <a href="#kontak" onclick="closeSiagaModal()" class="flex-1 text-center bg-army-gold text-army-dark font-bold py-2.5 rounded-xl text-sm">
+                    Ajukan Dukungan
+                </a>
+                <button onclick="closeSiagaModal()" class="px-4 py-2.5 rounded-xl bg-army-dark text-gray-300 text-sm border border-white/10 cursor-pointer">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT INTERACTIVITY ==================== -->
+    <script>
+        // Inisialisasi Lucide Icons
+        lucide.createIcons();
+
+        // 1. Live Clock WITA (Banjarmasin)
+        function updateClock() {
+            const now = new Date();
+            const options = { timeZone: 'Asia/Makassar', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const timeStr = new Intl.DateTimeFormat('id-ID', options).format(now);
+            document.getElementById('live-clock').textContent = `WITA ${timeStr}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 2. Mobile Menu Toggle
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+        });
+
+        // 3. Data & Tab Switcher: Bidang Tugas & Gelar Alutsista Komlek
+        const alutsistaData = {
+            radio: {
+                title: "Komunikasi Taktis & Radio Lapangan",
+                subtitle: "Jaring tulang punggung komunikasi suara dan data jarak dekat hingga jarak jauh tanpa bergantung infrastruktur sipil.",
+                image: "komlek.jpeg",
+                caption: "Dokumentasi Gelar & Pemeliharaan Repeater VHF/UHF oleh Tim Komlek Denkomlekrem 101 Bjm",
+                fallback: "https://placehold.co/600x380/1b2e1e/d4af37?text=GELAR+RADIO+TAKTIS+VHF%2FUHF+%26+REPEATER",
+                specs: [
+                    { name: "Radio Tactical Manpack HF/VHF", detail: "Komunikasi jarak jauh lintas kabupaten dengan fitur frequency hopping anti-jamming." },
+                    { name: "Mobile Repeater Tactical Unit", detail: "Stasiun pengulang sinyal bergerak untuk menembus medan hutan & perbukitan Meratus." },
+                    { name: "Handheld Transceiver (HT) Digital Terenkripsi", detail: "Perangkat komunikasi perorangan prajurit di lapangan dengan enkripsi AES-256." }
+                ],
+                badges: ["VHF / UHF / HF", "Anti-Jamming", "Jangkauan Pegunungan Meratus"]
+            },
+            satelit: {
+                title: "Komunikasi Satelit & Transmisi Data",
+                subtitle: "Menghubungkan Posko Lapangan terpencil langsung ke Makorem 101 Banjarmasin dan Mabesad secara real-time.",
+                image: "WhatsApp Image 2026-11-14 at 14.59.18.jpeg",
+                caption: "DOKUMENTASI: Pengendalian Stasiun Komunikasi Satelit & Pusat Komando Denkomlekrem 101 Bjm",
+                fallback: "https://placehold.co/600x380/1b2e1e/d4af37?text=STASIUN+VSAT+MOBILE+%26+KOMUNIKASI+SATELIT",
+                specs: [
+                    { name: "Flyaway & Mobile VSAT Tactical", detail: "Antena satelit portabel yang dapat digelar dalam waktu kurang dari 15 menit di daerah bencana." },
+                    { name: "Posko Tanggap Darurat Terintegrasi", detail: "Dukungan akses internet satelit berkecepatan tinggi untuk Video Conference (Vicon) pimpinan." },
+                    { name: "Telemetri & Pelaporan Digital Lapangan", detail: "Pengiriman data koordinat, peta situasi, dan laporan visual dari titik operasi." }
+                ],
+                badges: ["VSAT C/Ku-Band", "Rapid Deployment < 15 Menit", "Dukungan Posko Bencana"]
+            },
+            siber: {
+                title: "Teknologi Informasi, Siber & PoC",
+                subtitle: "Integrasi sistem komando pengendalian modern berbasis seluler taktis dan pengamanan jaringan informasi satuan.",
+                image: "WhatsApp Image 2026-11-14 at 19.39.15.jpeg",
+                caption: "DOKUMENTASI: Pemrograman & Integrasi Perangkat Komunikasi Digital / PoC oleh Teknisi Denkomlekrem 101 Bjm",
+                fallback: "https://placehold.co/600x380/1b2e1e/d4af37?text=SISTEM+PoC+%26+KOMANDO+KENDALI+DIGITAL",
+                specs: [
+                    { name: "Push-to-Talk over Cellular (PoC)", detail: "Komunikasi instan lintas wilayah tanpa batas jarak menggunakan jaringan seluler terenkripsi." },
+                    { name: "Pusat Komando & Pengendalian (Kodal)", detail: "Visualisasi situasi wilayah Korem 101 secara terpadu pada ruang Yudha." },
+                    { name: "Pengamanan Jaringan & Sandi Digital", detail: "Proteksi trafik data internal dan pencegahan kebocoran informasi strategis satuan." }
+                ],
+                badges: ["Push-to-Talk over Cellular", "Enkripsi End-to-End", "Kodal Real-Time"]
+            },
+            pernika: {
+                title: "Peperangan Elektronika (Pernika) & Haralkom",
+                subtitle: "Kesiapan pemeliharaan alat komunikasi, pengamanan spektrum elektromagnetik, dan dukungan operasi khusus.",
+                image: "WhatsApp Image 2026-11-14 at 19.39.16.jpeg",
+                caption: "DOKUMENTASI: Koordinasi Dukungan Alkom Pengamanan VVIP & Kesiapan Lapangan Bersama Unsur Pomad oleh Personel Denkomlekrem 101 Bjm",
+                fallback: "https://placehold.co/600x380/1b2e1e/d4af37?text=DUKUNGAN+ELEKTRONIKA+VVIP+%26+KARHUTLA",
+                specs: [
+                    { name: "Bengkel Pemeliharaan Elektronika (Haralkom)", detail: "Kalibrasi, perbaikan, dan perawatan berkala seluruh alutsista komlek satuan jajaran." },
+                    { name: "Dukungan Komlek Kunjungan VVIP", detail: "Gelar jaring komunikasi khusus dan sterilisasi frekuensi pengamanan Presiden/Wakil Presiden & Panglima TNI." },
+                    { name: "Gelar Komunikasi Operasi Karhutla Kalsel", detail: "Integrasi komunikasi Satgas Darat dan Satgas Udara (Helikopter Water Bombing) di titik rawan Karhutla." }
+                ],
+                badges: ["Sterilisasi Frekuensi VVIP", "Dukungan Karhutla Kalsel", "Haralkom Terpadu"]
+            }
+        };
+
+        function switchTab(key) {
+            const data = alutsistaData[key];
+            const container = document.getElementById('alutsista-content');
+            
+            // Update Active Button Style
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.dataset.tab === key) {
+                    btn.classList.remove('bg-army-slate/80', 'border-white/10', 'text-gray-300');
+                    btn.classList.add('bg-army-base', 'border-army-gold', 'text-white', 'shadow-lg');
+                } else {
+                    btn.classList.add('bg-army-slate/80', 'border-white/10', 'text-gray-300');
+                    btn.classList.remove('bg-army-base', 'border-army-gold', 'text-white', 'shadow-lg');
+                }
+            });
+
+            // Render Content
+            container.innerHTML = `
+                <div class="grid lg:grid-cols-12 gap-8 items-center">
+                    <div class="lg:col-span-5">
+                        <div class="relative rounded-2xl overflow-hidden border-2 border-army-gold/50 shadow-2xl bg-army-dark group">
+                            <img 
+                                src="${data.image}" 
+                                alt="${data.caption}" 
+                                onerror="this.src='${data.fallback}'"
+                                class="w-full h-72 sm:h-80 object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                            >
+                            <!-- Bingkai Taktis Sudut -->
+                            <div class="absolute top-2.5 left-2.5 w-4 h-4 border-t-2 border-l-2 border-army-gold pointer-events-none"></div>
+                            <div class="absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 border-army-gold pointer-events-none"></div>
+                            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-army-dark via-army-dark/90 to-transparent p-3.5">
+                                <p class="text-xs text-army-gold font-medium leading-snug flex items-center gap-1.5">
+                                    <i data-lucide="camera" class="w-3.5 h-3.5 shrink-0"></i>
+                                    <span>${data.caption}</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            ${data.badges.map(b => `<span class="px-3 py-1 rounded-lg bg-army-base border border-army-gold/30 text-xs font-semibold text-army-gold">${b}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="lg:col-span-7 space-y-5">
+                        <div>
+                            <h3 class="font-military font-bold text-2xl sm:text-3xl text-white uppercase">${data.title}</h3>
+                            <p class="text-gray-300 text-sm sm:text-base mt-1">${data.subtitle}</p>
+                        </div>
+                        <div class="space-y-3">
+                            ${data.specs.map(s => `
+                                <div class="bg-army-dark/90 border border-white/10 p-4 rounded-xl">
+                                    <div class="font-bold text-army-gold text-sm flex items-center gap-2">
+                                        <i data-lucide="check-square" class="w-4 h-4"></i> ${s.name}
+                                    </div>
+                                    <p class="text-gray-300 text-xs sm:text-sm mt-1">${s.detail}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+        // Load default tab
+        switchTab('radio');
+
+        // 4. Data & Filter: Galeri & Berita Kegiatan Satuan
+        const newsList = [
+            {
+                id: 1,
+                category: "Operasi & Karhutla",
+                date: "14 November 2026",
+                location: "Makodenkomlekrem Kapota Yudha, Banjarmasin",
+                title: "Gelar Komunikasi Satgas Karhutla Kalsel: Penyiapan Tiang Antena Repeater Mobile",
+                excerpt: "Personel Denkomlekrem 101 menyiapkan perangkat tiang antena repeater mobile pada kendaraan taktis di depan Makodenkomlekrem Kapota Yudha guna mendukung kelancaran komunikasi Satgas Karhutla Kalsel.",
+                image: "WhatsApp Image 2026-11-14 at 15.20.03.jpeg",
+                fallback: "https://placehold.co/640x360/1b2e1e/d4af37?text=GELAR+KOMUNIKASI+SATGAS+KARHUTLA+KALSEL",
+                fullText: [
+                    "Banjarmasin — Detasemen Komunikasi dan Elektronika Korem 101 Banjarmasin (Denkomlekrem 101 Bjm) melaksanakan penyiapan dan uji gelar tiang antena repeater mobile pada kendaraan taktis di halaman Makodenkomlekrem Kapota Yudha, Banjarmasin, dalam rangka mendukung operasi Satgas Penanggulangan Kebakaran Hutan dan Lahan (Karhutla) di wilayah Kalimantan Selatan.",
+                    "Dandenkomlekrem 101, Letkol Cke Adi Wahyu P., S.Kom., M.Tr.Mil., menegaskan bahwa keandalan repeater bergerak menjadi tulang punggung komunikasi antara posko taktis darat dan tim pemadaman lapangan di sektor-sektor terpencil yang minim jaringan telekomunikasi komersial.",
+                    "Dengan dukungan komunikasi VHF/UHF berlapis yang terintegrasi dengan posko induk Korem 101, pelaporan titik api (hotspot) serta pergerakan personel penanggulangan Karhutla dapat dikendalikan secara cepat, tepat, dan aman."
+                ]
+            },
+            {
+                id: 2,
+                category: "Dukungan VVIP",
+                date: "14 November 2026",
+                location: "Banjarmasin, Kalimantan Selatan",
+                title: "Dukungan Alkom Pengamanan VVIP: Pengecekan & Distribusi HT PoC Taktis",
+                excerpt: "Pengecekan teknis, pemrograman frekuensi, serta pendistribusian perangkat HT PoC dan alkom taktis oleh personel Komlek sebelum gelar pengamanan kunjungan VVIP di wilayah Korem 101.",
+                image: "WhatsApp Image 2026-11-14 at 15.20.04.jpeg",
+                fallback: "https://placehold.co/640x360/1b2e1e/d4af37?text=DUKUNGAN+ALKOM+PENGAMANAN+VVIP",
+                fullText: [
+                    "Banjarmasin — Dalam rangka menyukseskan rangkaian pengamanan kunjungan kerja VVIP di Provinsi Kalimantan Selatan, personel Denkomlekrem 101 Banjarmasin melaksanakan pengecekan menyeluruh, pengisian daya, serta distribusi perangkat Push-to-Talk over Cellular (PoC) dan radio taktis kepada unsur satuan tugas pengamanan.",
+                    "Setiap unit alat komunikasi dipastikan telah terprogram dalam saluran terenkripsi khusus sehingga koordinasi antar sub-satgas ring pengamanan, rute perjalanan, maupun posko taktis berjalan tanpa hambatan dan bebas interferensi.",
+                    "Melalui kesiapan teknis yang terukur berlandaskan semboyan Cighra Apta Nirbhaya, Denkomlekrem 101 menjamin kelancaran komando pengendalian selama seluruh rangkaian kegiatan VVIP berlangsung."
+                ]
+            },
+            {
+                id: 3,
+                category: "Kegiatan Satuan",
+                date: "18 November 2026",
+                location: "Taman Makam Pahlawan Bumi Kencana, Kalsel",
+                title: "Ziarah Rombongan HUT ke-81 Komlekad Tahun 2026 Denkomlekrem 101 Banjarmasin",
+                excerpt: "Personel Denkomlekrem 101 Banjarmasin bersama Persit Kartika Chandra Kirana melaksanakan Ziarah Rombongan memperingati HUT ke-81 Komlekad Tahun 2026 bertema 'Komlekad Professional dan Inovatif untuk Indonesia Berdaulat, Adil dan Makmur'.",
+                image: "WhatsApp Image 2026-11-18 at 10.59.24.jpeg",
+                fallback: "https://placehold.co/640x360/1b2e1e/d4af37?text=HUT+KE-81+KOMLEKAD+TAHUN+2026",
+                fullText: [
+                    "Banjarmasin — Keluarga besar Denkomlekrem 101 Banjarmasin bersama pengurus dan anggota Persit Kartika Chandra Kirana melaksanakan Ziarah Rombongan dalam rangka memperingati Hari Ulang Tahun (HUT) ke-81 Komunikasi dan Elektronika Angkatan Darat (Komlekad) Tahun 2026.",
+                    "Mengusung tema 'Komlekad Professional dan Inovatif untuk Indonesia Berdaulat, Adil dan Makmur', kegiatan diawali dengan penghormatan kepada arwah para pahlawan, peletakan karangan bunga di tugu monumen, dan dilanjutkan dengan tabur bunga di pusara para pahlawan kusuma bangsa.",
+                    "Momentum peringatan HUT ke-81 Komlekad ini menjadi pengingat bagi seluruh prajurit Denkomlekrem 101 untuk meneladani semangat juang para pendahulu serta terus berinovasi dalam menguasai teknologi komunikasi, elektronika, dan siber TNI AD."
+                ]
+            },
+            {
+                id: 4,
+                category: "Latihan & Binsat",
+                date: "27 Oktober 2026",
+                location: "Makodenkomlekrem 101 Banjarmasin",
+                title: "Latihan Teknis Fungsi Kecabangan (Latnisfungcab) & Pembinaan Satuan TA 2026",
+                excerpt: "Gelar pasukan dan penyelenggaraan Latihan Teknis Fungsi Kecabangan (Latnisfungcab) Denkomlekrem 101 Banjarmasin TA 2026 guna memelihara profesionalisme dan kesiapsiagaan operasional prajurit.",
+                image: "WhatsApp Image 2026-10-27 at 14.52.57.jpeg",
+                fallback: "https://placehold.co/640x360/1b2e1e/d4af37?text=LATNISFUNGCAB+%26+PEMBINAAN+SATUAN",
+                fullText: [
+                    "Banjarmasin — Denkomlekrem 101 Banjarmasin menyelenggarakan Latihan Teknis Fungsi Kecabangan (Latnisfungcab) dan Pembinaan Satuan Tahun Anggaran 2026 sebagai bagian dari program pembinaan kekuatan dan kemampuan prajurit kecabangan Komunikasi dan Elektronika.",
+                    "Dalam latihan ini, seluruh pelaku dan penyelenggara latihan menguji kemampuan gelar jaring komunikasi taktis, pengoperasian perangkat satelit dan radio lapangan, pemeliharaan alkom, hingga prosedur pengamanan berita sandi dalam skenario tugas operasi.",
+                    "Melalui Latnisfungcab TA 2026, setiap prajurit Denkomlekrem 101 diharapkan semakin mahir, tangguh, dan siap digerakkan kapan pun untuk mendukung tugas pokok Korem 101 Banjarmasin."
+                ]
+            }
+        ];
+
+        function renderNews(filter = 'all') {
+            const grid = document.getElementById('news-grid');
+            const filtered = filter === 'all' ? newsList : newsList.filter(item => item.category === filter);
+
+            grid.innerHTML = filtered.map(item => `
+                <article class="bg-army-dark border border-white/10 hover:border-army-gold/50 rounded-2xl overflow-hidden shadow-xl transition group flex flex-col">
+                    <div class="relative h-60 sm:h-64 overflow-hidden bg-army-base">
+                        <img src="${item.image}" alt="${item.title}" onerror="this.src='${item.fallback}'" class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-500">
+                        <span class="absolute top-4 left-4 bg-army-dark/90 border border-army-gold/40 text-army-gold text-xs font-bold px-3 py-1 rounded-lg uppercase tracking-wider">
+                            ${item.category}
+                        </span>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2 text-xs text-gray-400 mb-2">
+                                <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-3.5 h-3.5 text-army-gold"></i> ${item.date}</span>
+                                <span>•</span>
+                                <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-army-gold"></i> ${item.location}</span>
+                            </div>
+                            <h3 class="font-military font-bold text-xl text-white group-hover:text-army-gold transition leading-snug">
+                                ${item.title}
+                            </h3>
+                            <p class="text-gray-400 text-sm mt-2 line-clamp-3">
+                                ${item.excerpt}
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-white/10">
+                            <button onclick="openNewsModal(${item.id})" class="inline-flex items-center space-x-2 text-army-gold hover:text-army-goldHover font-semibold text-sm cursor-pointer">
+                                <span>Baca Selengkapnya</span>
+                                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function filterNews(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.filter === category) {
+                    btn.className = 'filter-btn bg-army-gold text-army-dark font-bold px-4 py-2 rounded-xl text-xs sm:text-sm transition cursor-pointer';
+                } else {
+                    btn.className = 'filter-btn bg-army-dark hover:bg-army-base text-gray-300 border border-white/10 px-4 py-2 rounded-xl text-xs sm:text-sm transition cursor-pointer';
+                }
+            });
+            renderNews(category);
+        }
+
+        // Initial render news
+        renderNews('all');
+
+        // 5. Modal Controls (Berita & Siaga)
+        function openNewsModal(id) {
+            const item = newsList.find(n => n.id === id);
+            if (!item) return;
+
+            const modalImg = document.getElementById('modal-img');
+            modalImg.src = item.image;
+            modalImg.onerror = function() { this.src = item.fallback; };
+            document.getElementById('modal-category').textContent = item.category;
+            document.getElementById('modal-date').innerHTML = `<i data-lucide="calendar" class="w-3.5 h-3.5 text-army-gold"></i> ${item.date}`;
+            document.getElementById('modal-location').innerHTML = `<i data-lucide="map-pin" class="w-3.5 h-3.5 text-army-gold"></i> ${item.location}`;
+            document.getElementById('modal-title').textContent = item.title;
+            document.getElementById('modal-body').innerHTML = item.fullText.map(p => `<p>${p}</p>`).join('');
+
+            const modal = document.getElementById('news-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function closeNewsModal() {
+            const modal = document.getElementById('news-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function openSiagaModal() {
+            const modal = document.getElementById('siaga-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeSiagaModal() {
+            const modal = document.getElementById('siaga-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Close modal when clicking backdrop
+        window.addEventListener('click', (e) => {
+            if (e.target.id === 'news-modal') closeNewsModal();
+            if (e.target.id === 'siaga-modal') closeSiagaModal();
+        });
+
+        // 6. Interactive Form Submission
+        document.getElementById('support-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('sender-name').value;
+            const unit = document.getElementById('sender-unit').value;
+            const service = document.getElementById('service-type').value;
+            const regCode = 'KOM-101-' + Math.floor(1000 + Math.random() * 9000);
+
+            const feedbackBox = document.getElementById('form-feedback');
+            const feedbackDetail = document.getElementById('feedback-detail');
+
+            feedbackDetail.innerHTML = `
+                Nomor Registrasi: <strong class="text-army-gold font-mono">${regCode}</strong><br>
+                Atas nama <strong>${name}</strong> (${unit}) untuk layanan <strong>${service}</strong> telah diteruskan ke Piket Staf Denkomlekrem 101 Banjarmasin. Petugas kami akan segera menghubungi Anda.
+            `;
+            feedbackBox.classList.remove('hidden');
+            this.reset();
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
