@@ -1324,30 +1324,70 @@
             return false;
         }
 
+        function getPublicCmsPayload() {
+            return {
+                categories: cmsState.categories,
+                news: cmsState.news,
+                gallery: cmsState.gallery,
+                sambutan: cmsState.sambutan,
+                profil: cmsState.profil
+            };
+        }
+
+        async function loadRemoteCmsContent() {
+            const { data, error } = await supabaseClient
+                .from('site_content').select('data').eq('key', 'cms_content').maybeSingle();
+            if (error) throw error;
+            if (data && data.data) {
+                const remote = data.data;
+                cmsState = { ...cmsState, ...remote };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(cmsState));
+                syncPublicSite();
+                updateAdminBadges();
+                return true;
+            }
+            if (currentAdminUser) {
+                const { error: seedError } = await supabaseClient.from('site_content').upsert({
+                    key: 'cms_content', data: getPublicCmsPayload(), updated_at: new Date().toISOString()
+                }, { onConflict: 'key' });
+                if (seedError) throw seedError;
+            }
+            return false;
+        }
+
+        async function loadRemoteRequests() {
+            if (!currentAdminUser) return;
+            const { data, error } = await supabaseClient.from('site_requests')
+                .select('id,data').order('id', { ascending: false });
+            if (error) throw error;
+            cmsState.requests = (data || []).map(row => ({ ...row.data, id: row.id }));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(cmsState));
+            updateAdminBadges();
+        }
+
         async function saveState() {
-            // Konten lain tetap tersimpan seperti sebelumnya; Status Jaring juga
-            // disinkronkan ke database bersama agar sama di semua perangkat.
             localStorage.setItem(STORAGE_KEY, JSON.stringify(cmsState));
             syncPublicSite();
             updateAdminBadges();
-
-            const currentJaring = JSON.stringify(cmsState.jaringStatus || defaultState.jaringStatus);
-            if (!currentAdminUser || currentJaring === lastSyncedJaring) return true;
-
+            if (!currentAdminUser) return true;
             try {
-                const { error } = await supabaseClient
-                    .from('site_content')
-                    .upsert({
-                        key: 'jaring_status',
-                        data: cmsState.jaringStatus || defaultState.jaringStatus,
+                const writes = [
+                    supabaseClient.from('site_content').upsert({
+                        key: 'cms_content', data: getPublicCmsPayload(), updated_at: new Date().toISOString()
+                    }, { onConflict: 'key' }),
+                    supabaseClient.from('site_content').upsert({
+                        key: 'jaring_status', data: cmsState.jaringStatus || defaultState.jaringStatus,
                         updated_at: new Date().toISOString()
-                    }, { onConflict: 'key' });
-                if (error) throw error;
-                lastSyncedJaring = currentJaring;
+                    }, { onConflict: 'key' })
+                ];
+                const results = await Promise.all(writes);
+                const failed = results.find(result => result.error);
+                if (failed) throw failed.error;
+                lastSyncedJaring = JSON.stringify(cmsState.jaringStatus || defaultState.jaringStatus);
                 return true;
             } catch (error) {
-                console.error('Gagal menyimpan Status Jaring ke Supabase:', error);
-                showAdminToast('Gagal menyimpan ke database online. Periksa koneksi atau hak akses Admin.');
+                console.error('Gagal menyimpan konten ke Supabase:', error);
+                showAdminToast('Gagal menyimpan perubahan online. Periksa koneksi dan hak akses Admin.');
                 return false;
             }
         }
@@ -1892,6 +1932,12 @@
                         };
                     }
                 }
+                await loadRemoteCmsContent();
+                if (currentAdminUser) {
+                    try { await loadRemoteRequests(); } catch (requestError) {
+                        console.error('Gagal memuat permohonan online:', requestError);
+                    }
+                }
                 const hasRemoteData = await loadRemoteJaringStatus();
                 if (currentAdminUser && !hasRemoteData) {
                     const { error: seedError } = await supabaseClient.from('site_content').upsert({
@@ -1949,7 +1995,15 @@
             const container = document.getElementById('admin-panel-content');
             if (menu === 'dashboard') renderAdminDashboard(container);
             else if (menu === 'jaring') renderAdminStatusJaring(container);
-            else if (menu === 'permohonan') renderAdminPermohonan(container);
+            else if (menu === 'permohonan') {
+                renderAdminPermohonan(container);
+                loadRemoteRequests().then(() => {
+                    if (activeAdminMenu === 'permohonan') renderAdminPermohonan(container);
+                }).catch(error => {
+                    console.error('Gagal memuat permohonan:', error);
+                    showAdminToast('Data permohonan online belum dapat dimuat.');
+                });
+            }
             else if (menu === 'berita') renderAdminBerita(container);
             else if (menu === 'kategori') renderAdminKategori(container);
             else if (menu === 'galeri') renderAdminGaleri(container);
@@ -2447,21 +2501,32 @@
             `;
         }
 
-        function updateServiceRequest(id) {
-            const req = (cmsState.requests || []).find(r => r.id === id);
+        async function updateServiceRequest(id) {
+            const req = (cmsState.requests || []).find(r => String(r.id) === String(id));
             if (!req) return;
             const statusEl = document.getElementById(`req-status-${id}`);
             const noteEl = document.getElementById(`req-note-${id}`);
             if (statusEl) req.status = statusEl.value;
             if (noteEl) req.adminNote = noteEl.value.trim();
-            saveState();
+            const { error } = await supabaseClient.from('site_requests')
+                .update({ data: { ...req, id: undefined } }).eq('id', id);
+            if (error) {
+                console.error(error);
+                showAdminToast('Perubahan permohonan gagal disimpan online.');
+                return;
+            }
             switchAdminMenu('permohonan');
             showAdminToast(`Tindak lanjut permohonan ${req.regCode} berhasil diperbarui (${req.status}).`);
         }
 
-        function deleteServiceRequest(id) {
-            cmsState.requests = (cmsState.requests || []).filter(r => r.id !== id);
-            saveState();
+        async function deleteServiceRequest(id) {
+            const { error } = await supabaseClient.from('site_requests').delete().eq('id', id);
+            if (error) {
+                console.error(error);
+                showAdminToast('Data permohonan gagal dihapus dari database online.');
+                return;
+            }
+            cmsState.requests = (cmsState.requests || []).filter(r => String(r.id) !== String(id));
             switchAdminMenu('permohonan');
             showAdminToast('Data permohonan layanan Komlek telah dihapus.');
         }
@@ -2592,15 +2657,34 @@
             return `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-gray-500/20 text-gray-300 border border-white/15">Draft</span>`;
         }
 
-        function handleImageUpload(input, targetInputId) {
+        async function handleImageUpload(input, targetInputId) {
             const file = input.files && input.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                document.getElementById(targetInputId).value = ev.target.result;
-                showAdminToast('Foto berhasil dimuat dan siap disimpan.');
-            };
-            reader.readAsDataURL(file);
+            if (!currentAdminUser) {
+                showAdminToast('Silakan login sebagai Admin terlebih dahulu.');
+                input.value = '';
+                return;
+            }
+            if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+                showAdminToast('Foto harus JPG, PNG, atau WEBP dengan ukuran maksimal 5 MB.');
+                input.value = '';
+                return;
+            }
+            try {
+                showAdminToast('Mengunggah foto ke penyimpanan online...');
+                const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
+                const path = 'cms/' + Date.now() + '-' + safeName;
+                const { error } = await supabaseClient.storage.from('site-media').upload(path, file, {
+                    cacheControl: '3600', upsert: false, contentType: file.type
+                });
+                if (error) throw error;
+                const { data } = supabaseClient.storage.from('site-media').getPublicUrl(path);
+                document.getElementById(targetInputId).value = data.publicUrl;
+                showAdminToast('Foto berhasil diunggah dan siap disimpan.');
+            } catch (error) {
+                console.error('Upload foto gagal:', error);
+                showAdminToast('Foto gagal diunggah. Periksa koneksi dan hak akses Admin.');
+            }
         }
 
         function saveNewsEntry(targetStatus) {
@@ -2775,21 +2859,24 @@
             `;
         }
 
-        function uploadGalleryPhoto(e) {
+        async function uploadGalleryPhoto(e) {
             e.preventDefault();
             const title = document.getElementById('gal-title').value.trim();
             const category = document.getElementById('gal-cat').value;
             const date = document.getElementById('gal-date').value;
-            const image = document.getElementById('gal-url').value || 'komlek.jpeg';
-
+            const image = document.getElementById('gal-url').value.trim();
+            if (!image) {
+                showAdminToast('Pilih atau masukkan alamat foto terlebih dahulu.');
+                return;
+            }
             cmsState.gallery.unshift({
-                id: Date.now(),
-                title, category, date, image,
+                id: Date.now(), title, category, date, image,
                 fallback: 'https://placehold.co/640x480/1b2e1e/d4af37?text=GALERI+KOMLEK+101'
             });
-            saveState();
+            const saved = await saveState();
+            if (!saved) return;
             switchAdminMenu('galeri');
-            showAdminToast('Foto berhasil diunggah ke Galeri Dokumentasi publik!');
+            showAdminToast('Foto berhasil disimpan online dan tampil di Galeri publik.');
         }
 
         function deleteGalleryPhoto(id) {
@@ -3054,7 +3141,7 @@
         initializeSupabaseApp();
 
         // 6. Interactive Form Submission (Terintegrasi Penuh dengan cmsState.requests di localStorage)
-        document.getElementById('support-form').addEventListener('submit', function(e) {
+        document.getElementById('support-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const name = document.getElementById('sender-name').value.trim();
             const unit = document.getElementById('sender-unit').value.trim();
@@ -3078,23 +3165,18 @@
             }).format(now);
             const submittedAt = `${datePart}, ${timePart} WITA`;
 
-            if (!Array.isArray(cmsState.requests)) {
-                cmsState.requests = [];
+            const requestId = Date.now();
+            const requestData = {
+                regCode, submittedAt, name, unit, phone, serviceType: service,
+                description: desc, status: 'Baru Masuk', adminNote: ''
+            };
+            const { error: requestError } = await supabaseClient.from('site_requests')
+                .insert({ id: requestId, data: requestData });
+            if (requestError) {
+                console.error('Pengiriman permohonan gagal:', requestError);
+                alert('Permohonan belum berhasil dikirim. Silakan coba kembali.');
+                return;
             }
-
-            cmsState.requests.unshift({
-                id: Date.now(),
-                regCode: regCode,
-                submittedAt: submittedAt,
-                name: name,
-                unit: unit,
-                phone: phone,
-                serviceType: service,
-                description: desc,
-                status: 'Baru Masuk',
-                adminNote: ''
-            });
-            saveState();
 
             const feedbackBox = document.getElementById('form-feedback');
             const feedbackDetail = document.getElementById('feedback-detail');
