@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase Auth & Database -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
         tailwind.config = {
@@ -995,8 +997,7 @@
             </div>
             <div class="flex gap-3">
                 <a href="#kontak" onclick="closeSiagaModal()" class="flex-1 text-center bg-army-gold text-army-dark font-bold py-2.5 rounded-xl text-sm">
-                    Ajukan Dukungan
-                </a>
+                    Ajukan Dukungan                </a>
                 <button onclick="closeSiagaModal()" class="px-4 py-2.5 rounded-xl bg-army-dark text-gray-300 text-sm border border-white/10 cursor-pointer">
                     Tutup
                 </button>
@@ -1258,7 +1259,6 @@
                     name: "Pasi Ops / Pejabat Pemeriksa",
                     rank: "Kapten Cke / Perwira Staf",
                     email: "pejabat@denkomlek101.mil.id",
-                    password: "komlek101",
                     role: "Pejabat Pemeriksa",
                     active: true
                 },
@@ -1267,7 +1267,6 @@
                     name: "Admin Staf Penerangan",
                     rank: "Serka / Operator Penerangan",
                     email: "stafpen@denkomlek101.mil.id",
-                    password: "penerangan101",
                     role: "Operator Berita",
                     active: true
                 }
@@ -1292,17 +1291,65 @@
             }
         }
 
+        // Konfigurasi publik Supabase. Kunci publishable aman digunakan di browser
+        // karena hak akses tulis dibatasi oleh Row Level Security (RLS).
+        const SUPABASE_URL = 'https://idvfajqdiehbgtpgsbej.supabase.co';
+        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_4moEAxdT-rX7731EGdl9QA_G7m_VDxT';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
         let cmsState = loadState();
-        let currentAdminUser = JSON.parse(sessionStorage.getItem('denkomlek_admin_user') || 'null');
+        (cmsState.users || []).forEach(user => { delete user.password; });
+        // Sesi admin diverifikasi langsung ke Supabase, bukan dari sessionStorage.
+        let currentAdminUser = null;
         let activeAdminMenu = 'dashboard';
         let editingNewsId = null;
         let pubStatusFilter = 'all';
         let reqStatusFilter = 'all';
+        let lastSyncedJaring = null;
 
-        function saveState() {
+        async function loadRemoteJaringStatus() {
+            const { data, error } = await supabaseClient
+                .from('site_content')
+                .select('data')
+                .eq('key', 'jaring_status')
+                .maybeSingle();
+            if (error) throw error;
+            if (data && data.data && Array.isArray(data.data.channels)) {
+                cmsState.jaringStatus = data.data;
+                lastSyncedJaring = JSON.stringify(cmsState.jaringStatus);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(cmsState));
+                syncJaringCard();
+                return true;
+            }
+            return false;
+        }
+
+        async function saveState() {
+            // Konten lain tetap tersimpan seperti sebelumnya; Status Jaring juga
+            // disinkronkan ke database bersama agar sama di semua perangkat.
             localStorage.setItem(STORAGE_KEY, JSON.stringify(cmsState));
             syncPublicSite();
             updateAdminBadges();
+
+            const currentJaring = JSON.stringify(cmsState.jaringStatus || defaultState.jaringStatus);
+            if (!currentAdminUser || currentJaring === lastSyncedJaring) return true;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('site_content')
+                    .upsert({
+                        key: 'jaring_status',
+                        data: cmsState.jaringStatus || defaultState.jaringStatus,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'key' });
+                if (error) throw error;
+                lastSyncedJaring = currentJaring;
+                return true;
+            } catch (error) {
+                console.error('Gagal menyimpan Status Jaring ke Supabase:', error);
+                showAdminToast('Gagal menyimpan ke database online. Periksa koneksi atau hak akses Admin.');
+                return false;
+            }
         }
 
         function showAdminToast(msg) {
@@ -1770,35 +1817,94 @@
 
         window.addEventListener('hashchange', renderPortalView);
 
-        document.getElementById('admin-login-form').addEventListener('submit', function(e) {
+        document.getElementById('admin-login-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('login-username').value.trim().toLowerCase();
-            const pass = document.getElementById('login-password').value;
+            const password = document.getElementById('login-password').value;
             const errBox = document.getElementById('login-error');
-
-            const user = cmsState.users.find(u => u.email.toLowerCase() === email && u.password === pass);
-            if (!user) {
-                errBox.textContent = "Akses ditolak: Email/username atau kata sandi tidak terdaftar dalam daftar akun undangan.";
-                errBox.classList.remove('hidden');
-                return;
-            }
-            if (!user.active) {
-                errBox.textContent = "Akun undangan Anda sedang dinonaktifkan oleh Administrator.";
-                errBox.classList.remove('hidden');
-                return;
-            }
-
             errBox.classList.add('hidden');
-            currentAdminUser = user;
-            sessionStorage.setItem('denkomlek_admin_user', JSON.stringify(user));
-            resetAdminLoginForm();
-            renderPortalView();
+
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+
+                const { data: isAdmin, error: accessError } = await supabaseClient.rpc('is_site_admin');
+                if (accessError) throw accessError;
+                if (isAdmin !== true) {
+                    await supabaseClient.auth.signOut();
+                    throw new Error('Akun ini belum terdaftar sebagai Admin website.');
+                }
+
+                const isPejabat = email === 'pejabat@denkomlek101.mil.id';
+                currentAdminUser = {
+                    id: data.user.id,
+                    email,
+                    name: isPejabat ? 'Pasi Ops / Pejabat Pemeriksa' : 'Admin Staf Penerangan',
+                    role: isPejabat ? 'Pejabat Pemeriksa' : 'Operator Berita'
+                };
+
+                const hasRemoteData = await loadRemoteJaringStatus();
+                if (!hasRemoteData) {
+                    // Migrasi satu kali: status lama di browser Admin menjadi data awal online.
+                    const { error: saveError } = await supabaseClient.from('site_content').upsert({
+                        key: 'jaring_status',
+                        data: cmsState.jaringStatus || defaultState.jaringStatus,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'key' });
+                    if (saveError) throw saveError;
+                    lastSyncedJaring = JSON.stringify(cmsState.jaringStatus || defaultState.jaringStatus);
+                }
+
+                resetAdminLoginForm();
+                renderPortalView();
+            } catch (error) {
+                await supabaseClient.auth.signOut();
+                currentAdminUser = null;
+                console.error('Login Admin gagal:', error);
+                errBox.textContent = error.message || 'Login gagal. Periksa email, kata sandi, dan koneksi internet.';
+                errBox.classList.remove('hidden');
+            }
         });
 
-        function adminLogout() {
+        async function adminLogout() {
+            await supabaseClient.auth.signOut();
             currentAdminUser = null;
-            sessionStorage.removeItem('denkomlek_admin_user');
             resetAdminLoginForm();
+            renderPortalView();
+        }
+
+        async function initializeSupabaseApp() {
+            try {
+                const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+                if (sessionError) throw sessionError;
+                if (sessionData.session) {
+                    const email = (sessionData.session.user.email || '').toLowerCase();
+                    const { data: isAdmin, error: accessError } = await supabaseClient.rpc('is_site_admin');
+                    if (accessError || isAdmin !== true) {
+                        await supabaseClient.auth.signOut();
+                    } else {
+                        const isPejabat = email === 'pejabat@denkomlek101.mil.id';
+                        currentAdminUser = {
+                            id: sessionData.session.user.id,
+                            email,
+                            name: isPejabat ? 'Pasi Ops / Pejabat Pemeriksa' : 'Admin Staf Penerangan',
+                            role: isPejabat ? 'Pejabat Pemeriksa' : 'Operator Berita'
+                        };
+                    }
+                }
+                const hasRemoteData = await loadRemoteJaringStatus();
+                if (currentAdminUser && !hasRemoteData) {
+                    const { error: seedError } = await supabaseClient.from('site_content').upsert({
+                        key: 'jaring_status',
+                        data: cmsState.jaringStatus || defaultState.jaringStatus,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'key' });
+                    if (seedError) throw seedError;
+                    lastSyncedJaring = JSON.stringify(cmsState.jaringStatus || defaultState.jaringStatus);
+                }
+            } catch (error) {
+                console.error('Inisialisasi Supabase gagal:', error);
+            }
             renderPortalView();
         }
 
@@ -1890,8 +1996,7 @@
 
                 <!-- Statistik Cards (Termasuk Kartu Permohonan Layanan Komlek) -->
                 <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
-                    <div onclick="switchAdminMenu('permohonan')" class="bg-army-slate border border-emerald-500/40 hover:border-emerald-400 p-5 rounded-2xl cursor-pointer transition shadow-lg">
-                        <div class="flex items-center justify-between">
+                    <div onclick="switchAdminMenu('permohonan')" class="bg-army-slate border border-emerald-500/40 hover:border-emerald-400 p-5 rounded-2xl cursor-pointer transition shadow-lg">                        <div class="flex items-center justify-between">
                             <span class="text-xs text-emerald-300 font-semibold uppercase">Permohonan Komlek</span>
                             <i data-lucide="inbox" class="w-4 h-4 text-emerald-400"></i>
                         </div>
@@ -2213,16 +2318,20 @@
                 }))
             };
 
-            saveState();
-            switchAdminMenu('jaring');
-            showAdminToast('Status Jaring Korem 101 berhasil disimpan & langsung diperbarui di halaman utama!');
+            saveState().then((saved) => {
+                if (!saved) return;
+                switchAdminMenu('jaring');
+                showAdminToast('Status Jaring Korem 101 berhasil disimpan dan diperbarui untuk semua perangkat.');
+            });
         }
 
         function resetDefaultStatusJaring() {
             cmsState.jaringStatus = JSON.parse(JSON.stringify(defaultState.jaringStatus));
-            saveState();
-            switchAdminMenu('jaring');
-            showAdminToast('Status Jaring Korem 101 dikembalikan ke pengaturan awal.');
+            saveState().then((saved) => {
+                if (!saved) return;
+                switchAdminMenu('jaring');
+                showAdminToast('Status Jaring Korem 101 dikembalikan ke pengaturan awal dan disimpan online.');
+            });
         }
 
         // MENU BARU: WADAH PERMOHONAN & LAYANAN KOMLEK
@@ -2828,58 +2937,27 @@
             showAdminToast('Profil dan kontak satuan berhasil diperbarui!');
         }
 
-        // MENU 7: PENGGUNA (Mengatur Akun Admin Undangan)
+        // MENU 7: PENGGUNA (Akun dikelola aman melalui Supabase Authentication)
         function renderAdminPengguna(container) {
+            const users = [
+                { name: 'Pasi Ops / Pejabat Pemeriksa', email: 'pejabat@denkomlek101.mil.id', role: 'Pejabat Pemeriksa' },
+                { name: 'Admin Staf Penerangan', email: 'stafpen@denkomlek101.mil.id', role: 'Operator Berita' }
+            ];
             container.innerHTML = `
                 <div>
-                    <h2 class="font-military font-bold text-2xl sm:text-3xl text-white uppercase">Manajemen Pengguna & Akun Undangan</h2>
-                    <p class="text-xs sm:text-sm text-gray-400">Atur daftar pejabat pemeriksa dan operator penerangan yang diundang untuk mengakses halaman <code class="text-army-gold">/admin/</code>.</p>
+                    <h2 class="font-military font-bold text-2xl sm:text-3xl text-white uppercase">Manajemen Pengguna & Akun Admin</h2>
+                    <p class="text-xs sm:text-sm text-gray-400">Akun login dan hak akses dikelola melalui Supabase Authentication agar kata sandi tidak disimpan di dalam file website.</p>
                 </div>
-
-                <div class="bg-army-slate border border-army-gold/30 rounded-2xl p-6">
-                    <h3 class="font-military font-bold text-lg text-army-gold uppercase mb-4">Undang / Tambah Akun Admin Baru</h3>
-                    <form onsubmit="inviteAdminUser(event)" class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                        <input type="text" id="usr-name" required placeholder="Nama / Jabatan" class="bg-army-dark border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white">
-                        <input type="email" id="usr-email" required placeholder="Email Undangan" class="bg-army-dark border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white">
-                        <input type="text" id="usr-pass" required placeholder="Kata Sandi" class="bg-army-dark border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white">
-                        <select id="usr-role" class="bg-army-dark border border-white/15 rounded-xl px-3 py-2.5 text-sm text-white">
-                            <option value="Pejabat Pemeriksa">Pejabat Pemeriksa</option>
-                            <option value="Operator Berita">Operator Berita</option>
-                        </select>
-                        <button type="submit" class="bg-army-gold hover:bg-army-goldHover text-army-dark font-bold py-2.5 px-4 rounded-xl text-sm cursor-pointer">
-                            + Undang Akun
-                        </button>
-                    </form>
+                <div class="bg-army-slate border border-army-gold/30 rounded-2xl p-5 space-y-3">
+                    <div class="font-bold text-army-gold">Pengelolaan akun</div>
+                    <p class="text-sm text-gray-300">Untuk menambah, menonaktifkan, atau mengganti kata sandi Admin, gunakan menu Authentication → Users pada dashboard Supabase. Hanya akun yang terdaftar pada daftar Admin yang dapat mengubah data website.</p>
+                    <a href="https://supabase.com/dashboard/project/idvfajqdiehbgtpgsbej/auth/users" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-army-gold text-army-dark font-bold px-4 py-2.5 rounded-xl text-sm">Buka Pengelolaan Akun Supabase</a>
                 </div>
-
                 <div class="bg-army-slate border border-white/10 rounded-2xl overflow-hidden">
                     <table class="w-full text-left text-xs sm:text-sm">
-                        <thead class="bg-army-dark text-gray-400 uppercase text-[11px]">
-                            <tr>
-                                <th class="px-4 py-3">Nama Pejabat / Petugas</th>
-                                <th class="px-4 py-3">Email Login</th>
-                                <th class="px-4 py-3">Peran</th>
-                                <th class="px-4 py-3">Status</th>
-                                <th class="px-4 py-3 text-right">Aksi</th>
-                            </tr>
-                        </thead>
+                        <thead class="bg-army-dark text-gray-400 uppercase text-[11px]"><tr><th class="px-4 py-3">Nama Pejabat / Petugas</th><th class="px-4 py-3">Email Login</th><th class="px-4 py-3">Peran</th></tr></thead>
                         <tbody class="divide-y divide-white/10">
-                            ${cmsState.users.map(u => `
-                                <tr>
-                                    <td class="px-4 py-3.5 font-bold text-white">${u.name}</td>
-                                    <td class="px-4 py-3.5 font-mono text-xs text-gray-300">${u.email}</td>
-                                    <td class="px-4 py-3.5"><span class="px-2.5 py-1 rounded-lg bg-army-base text-army-gold text-xs">${u.role}</span></td>
-                                    <td class="px-4 py-3.5">
-                                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${u.active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-300'}">
-                                            ${u.active ? 'Aktif' : 'Nonaktif'}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-3.5 text-right space-x-1.5">
-                                        <button onclick="toggleUserActive(${u.id})" class="px-2.5 py-1 rounded-lg bg-army-base text-xs text-gray-200 cursor-pointer">${u.active ? 'Nonaktifkan' : 'Aktifkan'}</button>
-                                        ${cmsState.users.length > 1 ? `<button onclick="deleteAdminUser(${u.id})" class="px-2.5 py-1 rounded-lg bg-red-950/70 text-xs text-red-200 cursor-pointer">Hapus</button>` : ''}
-                                    </td>
-                                </tr>
-                            `).join('')}
+                            ${users.map(u => `<tr><td class="px-4 py-3.5 font-bold text-white">${u.name}</td><td class="px-4 py-3.5 font-mono text-xs text-gray-300">${u.email}</td><td class="px-4 py-3.5"><span class="px-2.5 py-1 rounded-lg bg-army-base text-army-gold text-xs">${u.role}</span></td></tr>`).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -2888,32 +2966,13 @@
 
         function inviteAdminUser(e) {
             e.preventDefault();
-            cmsState.users.push({
-                id: Date.now(),
-                name: document.getElementById('usr-name').value.trim(),
-                rank: 'Admin Undangan',
-                email: document.getElementById('usr-email').value.trim(),
-                password: document.getElementById('usr-pass').value.trim(),
-                role: document.getElementById('usr-role').value,
-                active: true
-            });
-            saveState();
-            switchAdminMenu('pengguna');
-            showAdminToast('Akun undangan baru berhasil ditambahkan.');
+            showAdminToast('Tambahkan akun melalui Supabase Authentication → Users.');
         }
-
-        function toggleUserActive(id) {
-            const u = cmsState.users.find(x => x.id === id);
-            if (u) u.active = !u.active;
-            saveState();
-            switchAdminMenu('pengguna');
+        function toggleUserActive() {
+            showAdminToast('Kelola status akun melalui Supabase Authentication → Users.');
         }
-
-        function deleteAdminUser(id) {
-            cmsState.users = cmsState.users.filter(u => u.id !== id);
-            saveState();
-            switchAdminMenu('pengguna');
-            showAdminToast('Akun admin dihapus.');
+        function deleteAdminUser() {
+            showAdminToast('Kelola akun melalui Supabase Authentication → Users.');
         }
 
         // MENU 8: PUBLIKASI (Draft, Pemeriksaan & Persetujuan, dan Terbitkan — Langkah 3, 4, 5)
@@ -2936,8 +2995,7 @@
                 </div>
 
                 <div class="space-y-4">
-                    ${filtered.map(item => `
-                        <div class="bg-army-slate border border-white/10 rounded-2xl p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                    ${filtered.map(item => `                        <div class="bg-army-slate border border-white/10 rounded-2xl p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
                             <div class="flex items-start gap-4">
                                 <img src="${item.image}" alt="${item.title}" onerror="this.src='${item.fallback}'" class="w-24 h-20 rounded-xl object-cover shrink-0 border border-white/10">
                                 <div class="space-y-1">
@@ -2992,8 +3050,8 @@
             else showAdminToast('Berita dikembalikan ke status Draft (tidak tampil di halaman publik).');
         }
 
-        // Jalankan Sinkronisasi Awal Saat Halaman Dimuat
-        renderPortalView();
+        // Muat Status Jaring online dan verifikasi sesi Admin saat halaman dibuka.
+        initializeSupabaseApp();
 
         // 6. Interactive Form Submission (Terintegrasi Penuh dengan cmsState.requests di localStorage)
         document.getElementById('support-form').addEventListener('submit', function(e) {
